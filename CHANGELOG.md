@@ -40,6 +40,11 @@ the Sparkle update description — a release without a section here fails CI.
 - **iOS: Server → Space → Agent.** The phone follows the Mac's layout: pick a
   server, then one of its spaces, then an agent (or a terminal) in it.
 
+### Fixed
+- **Option types characters in the terminal.** Layouts that need Option for
+  printable characters (ABNT2 "/" and "?" on ⌥Q/⌥W) now reach the pane instead
+  of being sent as Meta, and Ctrl+/ works on ABNT2 keyboards.
+
 ## [0.6.25] - 2026-11-02
 
 > **Herdrm may be discontinued.** herdr has released its own official GUI app,

@@ -180,9 +180,9 @@ enum GhosttyRuntime {
             builder.withCursorStyle(.block)
             builder.withCursorStyleBlink(true)
             builder.withFontThicken(!thinStrokes)
-            // Option-as-Meta: matches what the SwiftTerm embed did, and the
-            // readline chords below (⌥⌫ → ESC DEL etc.) assume it.
-            builder.withCustom("macos-option-as-alt", "true")
+            // Option composes characters (ABNT2 types "/" and "?" with ⌥Q/⌥W).
+            // The readline chords (⌥⌫ → ESC DEL etc.) are sent explicitly below.
+            builder.withCustom("macos-option-as-alt", "false")
             // HerdrM owns copy only while Ghostty has a local selection. With
             // no local selection, Command-C must reach a mouse-aware pane app.
             builder.withCustom("keybind", "super+c=unbind")
@@ -586,6 +586,14 @@ final class LineBreakTerminalView: AppTerminalView {
             case 117: return "\u{1b}d"       // ⌥⌦ → ESC d
             default: break
             }
+        }
+        // ABNT2 (and JIS) put "/" on keyCode 94 (ABNT_C1 / JIS underscore), which
+        // Ghostty maps to the codepoint-less `intl_ro` key. Ctrl+/ then reaches the
+        // encoder with no text and no logical codepoint and produces nothing. US
+        // keyCode 44 works because Ghostty derives '/' from it. Send ^_ (0x1F).
+        if event.keyCode == 94,
+           modifiers.subtracting([.capsLock, .numericPad, .function]) == .control {
+            return "\u{1f}"  // Ctrl+/ (ABNT2 keyCode 94) → ^_
         }
         if event.keyCode == 36 || event.keyCode == 76,  // Return, keypad Enter
            modifiers.contains(.shift),
